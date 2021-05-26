@@ -28,14 +28,14 @@
 <body>
   <fieldset>
     <legend>Error Calculator</legend>
-    <input type="number" name="first-num" id="first-num" />
+    <input name="first-num" id="first-num" />
     <select name="operator" id="operator">
       <option>+</option>
       <option>-</option>
       <option>*</option>
       <option>/</option>
     </select>
-    <input type="number" name="second-num" id="second-num" />
+    <input name="second-num" id="second-num" />
     <button id="calculate">Calculate</button>
     <br />
     <output></output>
@@ -46,7 +46,7 @@
     <button>Console Error Demo</button>
     <button>Console Dir</button>
     <button>Console dirxml</button>
-    <button>Console Error</button>
+    <button>Custom Error</button>
     <button>Console Group Start</button>
     <button>Console Group End</button>
     <button>Console Table</button>
@@ -56,18 +56,125 @@
     <button>Trigger a Global Error</button>
   </section>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "789bb42025814441b2a478fda3238e1e"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+
+    TrackJS.track('Testing TrackJS!');
+  </script>
+                        
+  <script>
+    window.onerror = function(errorMessage,url,lineNumber){
+      console.log(errorMessage);
+    }
+
+    class WeirdError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "WeirdError";
+      }
+    }
+
+    function test() {
+      throw new WeirdError("Another one");
+    }
+
     let calculateBtn = document.querySelector('#calculate');
     calculateBtn.addEventListener('click', () => {
-      let output = document.querySelector('output');
-      let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      try {
+        let output = document.querySelector('output');
+        let firstNum = document.querySelector('#first-num').value;
+        let secondNum = document.querySelector('#second-num').value;
+        let operator = document.querySelector('#operator').value;
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      } catch (err) {
+        console.error(err.message);
+      }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
     // TODO - Make buttons functional
+    errorBtns[0].addEventListener('click', ()=>{
+      console.log("Hello World");
+    });
+
+    errorBtns[1].addEventListener('click', () => {
+      console.error('Let the dance begin');
+    });
+
+    errorBtns[2].addEventListener('click', () => {
+      console.dir(document.querySelector('#error-btns > button'));
+    });
+
+    errorBtns[3].addEventListener('click', () => {
+      console.dirxml(document.querySelector('body'));
+    });
+
+    errorBtns[4].addEventListener('click', () => {
+      try {
+        test();
+      } catch(err) {
+        console.error(err.message);
+        console.error(err.name);
+        console.error(err.stack);
+      }
+    });
+
+    errorBtns[5].addEventListener('click', () => {
+      console.group('Log Group');
+    });
+
+    errorBtns[6].addEventListener('click', () => {
+      console.groupEnd('Log Group');
+    });
+
+    errorBtns[7].addEventListener('click', () => {
+      console.table([
+        {
+          course: '110',
+          time: 'async',
+        },
+        {
+          course: '111',
+          time: 'sync',
+        },
+        {
+          course: '109',
+          time: 'async',
+          Exam: 'yes'
+        }
+      ]);
+    });
+
+    errorBtns[8].addEventListener('click', () => {
+      console.log('Start timer');
+      console.time();
+    });
+
+    errorBtns[9].addEventListener('click', () => {
+      console.log('End timer');
+      console.timeEnd();
+    });
+
+    errorBtns[10].addEventListener('click', () => {
+      const deepest = () => { deeper(); };
+      const deeper = () => { deep(); };
+      const deep = () => { ground(); };
+      const ground = () => { console.trace(); };
+      deepest();
+    });
+
+    errorBtns[11].addEventListener('click', () => {
+      try {
+        document.querySelector('p').innerHTML = "Doesn't exist";
+      } catch (error) {
+        console.error(error.message);
+      }
+      document.querySelector('h4').appendChild(nothing);
+    });
   </script>
 </body>
 </html>
