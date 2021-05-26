@@ -3,4 +3,4 @@
 ## Author(s):
 - Taorui Wang
 
-https://github.com/t2wang/Lab9
+https://t2wang.github.io/Lab9/
